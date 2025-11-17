@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reveal Imposter</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Imposter Word Game</h1>
+
+  <div id="revealScreen">
+    <h2>All players have seen their word.</h2>
+    <button onclick="showImposter()">Reveal the Imposter</button>
+    <button onclick="exitToMenu()">Exit</button>
+  </div>
+
+  <div id="resultScreen" class="hidden">
+    <h2>The Imposter was:</h2>
+    <p id="imposter" class="imposter-name"></p>
+    <h3>The shared card was:</h3>
+    <p id="sharedCard" class="shared-card"></p>
+    <button onclick="playAgain()">Play Again</button>
+    <button onclick="exitToMenu()">Exit</button>
+  </div>
+
+  <script>
+    const players = JSON.parse(localStorage.getItem("players") || "[]");
+    const imposterIndex = parseInt(localStorage.getItem("imposterIndex"));
+    const assignments = JSON.parse(localStorage.getItem("assignments") || "[]");
+
+    function showImposter() {
+      const imposterName = players[imposterIndex] || "Unknown";
+      const sharedCard = assignments.find(a => a.key !== "imposter")?.word || "Unknown";
+
+      document.getElementById("revealScreen").classList.add("hidden");
+      document.getElementById("resultScreen").classList.remove("hidden");
+      document.getElementById("imposter").innerText = imposterName;
+      document.getElementById("sharedCard").innerText = sharedCard;
+    }
+
+    function playAgain() {
+      window.location.href = "game.html";
+    }
+
+    function exitToMenu() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

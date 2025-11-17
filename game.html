@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reveal Words</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Reveal Your Word</h1>
+  <div id="wordScreen">
+    <h2 id="currentPlayer"></h2>
+    <button onclick="toggleWord()">Reveal / Hide Word</button>
+    <p id="word" class="hidden"></p>
+    <div id="cardImageContainer" class="hidden"></div>
+    <button onclick="nextPlayer()">Continue</button>
+  </div>
+
+  <script>
+    let cards = [];
+    let players = JSON.parse(localStorage.getItem("players") || "[]");
+    let assignments = [];
+    let currentPlayerIndex = 0;
+    let imposterIndex;
+
+    async function loadCards() {
+      const response = await fetch("cards.json");
+      cards = await response.json();
+      startRound();
+    }
+
+    function startRound() {
+      const sharedCard = cards[Math.floor(Math.random() * cards.length)];
+      const sharedWord = sharedCard.name;
+      const sharedKey = sharedCard.key;
+
+      assignments = new Array(players.length).fill({ word: sharedWord, key: sharedKey });
+      imposterIndex = Math.floor(Math.random() * players.length);
+      assignments[imposterIndex] = { word: "You are the imposter!", key: "imposter" };
+
+      localStorage.setItem("imposterIndex", imposterIndex);
+      localStorage.setItem("assignments", JSON.stringify(assignments));
+      
+      showPlayer();
+    }
+
+    function showPlayer() {
+      const name = players[currentPlayerIndex];
+      const { word } = assignments[currentPlayerIndex];
+
+      document.getElementById("currentPlayer").innerText = `${name}'s turn`;
+      document.getElementById("word").innerText = word;
+      document.getElementById("word").classList.add("hidden");
+
+      const container = document.getElementById("cardImageContainer");
+      container.innerHTML = "";
+      container.classList.add("hidden");
+    }
+
+    function toggleWord() {
+      const { key } = assignments[currentPlayerIndex];
+      const container = document.getElementById("cardImageContainer");
+
+      document.getElementById("word").classList.toggle("hidden");
+      container.classList.toggle("hidden");
+
+      const img = document.createElement("img");
+      img.alt = "Card image";
+      img.classList.add("card-reveal");
+
+      if (key === "imposter") {
+        img.classList.add("card-imposter");
+      } else {
+        img.classList.add("card-normal");
+      }
+
+      const fileName = key === "imposter"
+        ? "imposter.png"
+        : key.toLowerCase().replace(/[\s\.\-]/g, "-") + ".png";
+
+      img.src = "cards-150/" + fileName;
+      container.innerHTML = "";
+      container.appendChild(img);
+    }
+
+    function nextPlayer() {
+      currentPlayerIndex++;
+      if (currentPlayerIndex < players.length) {
+        showPlayer();
+      } else {
+        window.location.href = "reveal.html"; // go to reveal screen instead of result
+      }
+    }
+
+    loadCards();
+  </script>
+</body>
+</html>
