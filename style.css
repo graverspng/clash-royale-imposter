@@ -1,7 +1,8 @@
 body {
   font-family: 'Trebuchet MS', sans-serif;
   text-align: center;
-  background: linear-gradient(135deg, #13293D, #006494);
+  background: url("cards-150/background.png") no-repeat center center fixed;
+  background-size: cover;
   color: #E8F1F2;
   margin: 0;
   padding: 20px;
@@ -11,6 +12,8 @@ body {
   justify-content: flex-start;
   align-items: center;
 }
+
+
 
 h1 {
   font-size: 3rem;
@@ -111,6 +114,12 @@ button:hover {
   color: #E8F1F2;
   text-shadow: 2px 2px #000;
 }
+
+body.game-background {
+  background: url("cards-150/background2.png") no-repeat center center fixed;
+  background-size: cover;
+}
+
 
 #imposter {
   font-size: 2rem;

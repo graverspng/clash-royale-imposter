@@ -2,9 +2,10 @@
 <html>
 <head>
   <title>Reveal Words</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="game-background">
   <h1>Reveal Your Word</h1>
   <div id="wordScreen">
     <h2 id="currentPlayer"></h2>
@@ -19,7 +20,6 @@
     let players = JSON.parse(localStorage.getItem("players") || "[]");
     let assignments = [];
     let currentPlayerIndex = 0;
-    let imposterIndex;
 
     async function loadCards() {
       const response = await fetch("cards.json");
@@ -32,13 +32,26 @@
       const sharedWord = sharedCard.name;
       const sharedKey = sharedCard.key;
 
-      assignments = new Array(players.length).fill({ word: sharedWord, key: sharedKey });
-      imposterIndex = Math.floor(Math.random() * players.length);
-      assignments[imposterIndex] = { word: "You are the imposter!", key: "imposter" };
+      const imposterCount = parseInt(localStorage.getItem("imposterCount") || "1");
+      const imposterIndexes = [];
 
-      localStorage.setItem("imposterIndex", imposterIndex);
+      while (imposterIndexes.length < imposterCount) {
+        const index = Math.floor(Math.random() * players.length);
+        if (!imposterIndexes.includes(index)) {
+          imposterIndexes.push(index);
+        }
+      }
+
+      assignments = players.map((_, i) => {
+        if (imposterIndexes.includes(i)) {
+          return { word: "You are the imposter!", key: "imposter" };
+        } else {
+          return { word: sharedWord, key: sharedKey };
+        }
+      });
+
       localStorage.setItem("assignments", JSON.stringify(assignments));
-      
+      localStorage.setItem("imposterIndexes", JSON.stringify(imposterIndexes));
       showPlayer();
     }
 
@@ -86,7 +99,7 @@
       if (currentPlayerIndex < players.length) {
         showPlayer();
       } else {
-        window.location.href = "reveal.html"; // go to reveal screen instead of result
+        window.location.href = "reveal.html";
       }
     }
 

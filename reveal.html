@@ -25,16 +25,16 @@
 
   <script>
     const players = JSON.parse(localStorage.getItem("players") || "[]");
-    const imposterIndex = parseInt(localStorage.getItem("imposterIndex"));
+    const imposterIndexes = JSON.parse(localStorage.getItem("imposterIndexes") || "[]");
     const assignments = JSON.parse(localStorage.getItem("assignments") || "[]");
 
     function showImposter() {
-      const imposterName = players[imposterIndex] || "Unknown";
+      const imposterNames = imposterIndexes.map(i => players[i]).join(", ");
       const sharedCard = assignments.find(a => a.key !== "imposter")?.word || "Unknown";
 
       document.getElementById("revealScreen").classList.add("hidden");
       document.getElementById("resultScreen").classList.remove("hidden");
-      document.getElementById("imposter").innerText = imposterName;
+      document.getElementById("imposter").innerText = imposterNames;
       document.getElementById("sharedCard").innerText = sharedCard;
     }
 

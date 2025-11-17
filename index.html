@@ -2,15 +2,21 @@
 <html>
 <head>
   <title>Imposter Word Game</title>
+  <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Clash Royale Imposter Word Game</h1>
+  <h1>Imposter Word Game</h1>
+
   <div id="setup">
     <h2>Add Players</h2>
     <input type="text" id="playerName" placeholder="Enter player name">
     <button onclick="addPlayer()">Add Player</button>
     <ul id="playerList"></ul>
+
+    <h2>Set Imposter Count</h2>
+    <input type="number" id="imposterCount" min="1" value="1">
+
     <button onclick="startGame()">Start Game</button>
   </div>
 
@@ -29,11 +35,22 @@
     }
 
     function startGame() {
-      if (players.length < 2) {
+      const imposterCount = parseInt(document.getElementById("imposterCount").value);
+      const playerCount = players.length;
+
+      if (playerCount < 2) {
         alert("Need at least 2 players!");
         return;
       }
+
+      const maxImposters = Math.floor(playerCount / 2);
+      if (imposterCount > maxImposters) {
+        alert(`Too many imposters! Max allowed for ${playerCount} players is ${maxImposters}.`);
+        return;
+      }
+
       localStorage.setItem("players", JSON.stringify(players));
+      localStorage.setItem("imposterCount", imposterCount);
       window.location.href = "game.html";
     }
   </script>
